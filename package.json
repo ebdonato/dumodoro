@@ -1,6 +1,6 @@
 {
     "name": "dumodoro",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Du! Pomodoro Timer",
     "productName": "Du!modoro",
     "author": "Eduardo Donato <eduardo.donato@gmail.com>",
@@ -9,7 +9,7 @@
         "lint": "eslint --ext .js,.vue ./",
         "test": "echo \"No test specified\" && exit 0",
         "dev": "quasar dev",
-        "icongenie": "icongenie generate -i ./src/assets/logo.png --skip-trim --theme-color ffd600"
+        "icongenie": "icongenie generate -i ./public/logo.png --skip-trim --theme-color ffd600"
     },
     "dependencies": {
         "@quasar/extras": "^1.0.0",

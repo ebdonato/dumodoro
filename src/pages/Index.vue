@@ -8,7 +8,7 @@
                 color="primary"
                 readonly
                 class="self-center"
-                icon="circle"
+                icon="img:cycle.png"
             />
             <div>
                 <q-circular-progress
@@ -23,19 +23,19 @@
                 >
                     <q-img
                         v-if="getStage == 'work'"
-                        src="~assets/work.png"
+                        src="work.png"
                         spinner-color="primary"
                         style="height: 100px; max-width: 100px"
                     />
                     <q-img
                         v-if="getStage == 'pause'"
-                        src="~assets/pause.png"
+                        src="pause.png"
                         spinner-color="primary"
                         style="height: 100px; max-width: 100px"
                     />
                     <q-img
                         v-if="getStage == 'rest'"
-                        src="~assets/rest.png"
+                        src="rest.png"
                         spinner-color="primary"
                         style="height: 100px; max-width: 100px"
                     />
@@ -49,12 +49,12 @@
                 </div>
             </div>
             <div class="row justify-between">
-                <q-btn flat round color="primary" icon="skip_next" @click="skipStage">
+                <q-btn flat round color="primary" icon="skip_next" @click="skipStageDialog">
                     <q-tooltip :delay="1000">
                         Próximo estágio
                     </q-tooltip>
                 </q-btn>
-                <q-btn v-if="getStatus == 'stopped'" flat round color="primary" icon="play_arrow" @click="startStage">
+                <q-btn v-if="getStatus != 'running'" flat round color="primary" icon="play_arrow" @click="startStage">
                     <q-tooltip :delay="1000">
                         Iniciar
                     </q-tooltip>
@@ -64,7 +64,7 @@
                         Pausar
                     </q-tooltip>
                 </q-btn>
-                <q-btn flat round color="primary" icon="replay" @click="reset">
+                <q-btn flat round color="primary" icon="replay" @click="resetDialog">
                     <q-tooltip :delay="1000">
                         Resetar
                     </q-tooltip>
@@ -104,6 +104,30 @@ export default {
     },
     methods: {
         ...mapActions("timer", ["startStage", "stopStage", "skipStage", "reset"]),
+        skipStageDialog() {
+            this.$q
+                .dialog({
+                    title: "Próximo estágio?",
+                    dark: true,
+                    cancel: true,
+                    persistent: true,
+                })
+                .onOk(() => {
+                    this.skipStage()
+                })
+        },
+        resetDialog() {
+            this.$q
+                .dialog({
+                    title: "Resetar tudo?",
+                    dark: true,
+                    cancel: true,
+                    persistent: true,
+                })
+                .onOk(() => {
+                    this.reset()
+                })
+        },
     },
 }
 </script>

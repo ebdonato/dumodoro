@@ -23,6 +23,10 @@ export function updateStatus(state, payload) {
     state.status = payload
 }
 
+export function updateAutoStart(state, payload) {
+    state.autoStart = payload
+}
+
 export function updateStage(state, payload) {
     state.stage = payload
     if (payload === "work") {

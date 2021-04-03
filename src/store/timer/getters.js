@@ -21,6 +21,10 @@ export function getCycle(state) {
     return state.cycle
 }
 
+export function getAutoStart(state) {
+    return state.autoStart
+}
+
 export function isRunning(state) {
     return state.status == "running"
 }
