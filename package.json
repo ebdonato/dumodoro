@@ -2,7 +2,7 @@
     "name": "dumodoro",
     "version": "0.0.1",
     "description": "Du! Pomodoro Timer",
-    "productName": "Du!modoror",
+    "productName": "Du!modoro",
     "author": "Eduardo Donato <eduardo.donato@gmail.com>",
     "private": true,
     "scripts": {

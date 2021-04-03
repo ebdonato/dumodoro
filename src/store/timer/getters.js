@@ -17,6 +17,10 @@ export function getCycles(state) {
     return state.cycles
 }
 
+export function getCycle(state) {
+    return state.cycle
+}
+
 export function isRunning(state) {
     return state.status == "running"
 }

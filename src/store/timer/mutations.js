@@ -1,60 +1,46 @@
 export function updateWorkTime(state, payload) {
     state.workTime = payload
 }
+
 export function updatePauseTime(state, payload) {
     state.pauseTime = payload
 }
+
 export function updateRestTime(state, payload) {
     state.restTime = payload
 }
+
 export function updateCycles(state, payload) {
     state.cycles = payload
 }
+
+export function updateCycle(state, payload) {
+    console.log("updateCycle")
+    state.cycle = payload
+}
+
 export function updateStatus(state, payload) {
     state.status = payload
 }
+
 export function updateStage(state, payload) {
-    const nextStageName = {
-        work: state.workTime,
-        pause: state.pauseTime,
-        rest: state.restTime,
-    }
     state.stage = payload
-    state.timeRemaining = nextStageName[payload] * 60
-
-    clearCountdown(state)
-}
-
-export function nextStage(state) {
-    const currentStage = state.stage
-
-    const nextStageName = {
-        work: "pause",
-        pause: "rest",
-        rest: "work",
+    if (payload === "work") {
+        state.cycle++
     }
-
-    updateStage(state, nextStageName[currentStage] ?? "work")
-}
-
-function clearCountdown(state, goToNextLevel = false) {
-    if (state.intervalReference) {
-        clearInterval(state.intervalReference)
-        state.intervalReference = null
-    }
-    state.status = "stopped"
-
-    if (goToNextLevel) {
-        //TODO show notification
-        nextStage(state)
+    if (payload === "rest") {
+        state.cycle = 0
     }
 }
-export function decreaseStageTime(state) {
-    state.timeRemaining -= 1
-    if (!state.timeRemaining) {
-        clearCountdown(state, true)
-    }
+
+export function updateTimeRemaining(state, payload) {
+    state.timeRemaining = payload * 60
 }
+
+export function decreaseTimeRemaining(state) {
+    state.timeRemaining--
+}
+
 export function updateIntervalReference(state, payload) {
     state.intervalReference = payload
 }
