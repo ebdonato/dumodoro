@@ -1,7 +1,31 @@
 <template>
     <q-layout view="hHh lpR lFf" class="bg-dark text-primary">
         <q-header>
-            <q-toolbar class="bg-dark text-primary">
+            <q-bar v-if="$q.platform.is.electron" class="q-electron-drag bg-dark text-primary">
+                <div>{{ productName }}</div>
+
+                <q-space />
+
+                <q-btn
+                    v-if="$router.currentRoute.name == 'Index'"
+                    flat
+                    round
+                    color="text-primary"
+                    icon="settings"
+                    :to="{ name: 'Config' }"
+                />
+                <q-btn v-else flat round color="text-primary" icon="home" :to="{ name: 'Index' }" />
+                <q-btn
+                    dense
+                    flat
+                    icon="minimize"
+                    class="q-electron-drag--exception"
+                    @click="$q.electron.remote.BrowserWindow.getFocusedWindow().minimize()"
+                />
+                <q-btn dense flat icon="close" class="q-electron-drag--exception" @click="close" />
+            </q-bar>
+
+            <q-toolbar v-else class="bg-dark text-primary">
                 <q-toolbar-title>
                     {{ productName }}
                 </q-toolbar-title>
@@ -59,6 +83,18 @@ export default {
                     dialog.hide()
                 }
             }, 1000)
+        },
+        close() {
+            this.$q
+                .dialog({
+                    title: "Confirme",
+                    message: "Encerrar o aplicativo?",
+                    cancel: true,
+                    persistent: true,
+                })
+                .onOk(() => {
+                    this.$q.electron.remote.BrowserWindow.getFocusedWindow().close()
+                })
         },
     },
 }
