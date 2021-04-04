@@ -1,4 +1,18 @@
-import { Notify } from "quasar"
+import { Notify, Dialog } from "quasar"
+
+const askForSystemNotification = handler => {
+    window.Notification &&
+        !["denied", "granted"].includes(Notification.permission) &&
+        Dialog.create({
+            title: "Notificação no Sistema",
+            message: "Exibir notificação ao fim de cada estágio?",
+            dark: true,
+            cancel: true,
+            persistent: true,
+        }).onOk(() => {
+            Notification.requestPermission(handler || (() => {}))
+        })
+}
 
 export function reset({ commit, state }) {
     if (state.intervalReference) {
@@ -12,6 +26,10 @@ export function reset({ commit, state }) {
 }
 
 export function startStage({ commit, state }) {
+    const speed = process.env.DEV ? 100 : 1000
+
+    askForSystemNotification()
+
     const intervalReference = setInterval(() => {
         if (!state.timeRemaining) {
             if (!!state.intervalReference) {
@@ -23,7 +41,7 @@ export function startStage({ commit, state }) {
         } else {
             commit("decreaseTimeRemaining")
         }
-    }, 1000)
+    }, speed)
     commit("updateStatus", "running")
     commit("updateIntervalReference", intervalReference)
 }
@@ -52,59 +70,90 @@ export function nextStage({ commit, state }, priorStageEnding = true) {
     commit("updateTimeRemaining", state[`${nextStageName}Time`])
     commit("updateStatus", "waiting")
 
-    priorStageEnding &&
-        !state.autoStart &&
-        Notify.create({
-            message: "Começar próximo estágio?",
-            progress: true,
-            color: "primary",
-            textColor: "dark",
-            avatar: require(`../../../public/${nextStageName}-dark.png`),
-            actions: [
-                {
-                    label: "Não",
-                    color: "accent",
-                    handler: () => {
-                        /* ... */
+    if (priorStageEnding) {
+        const showInternalNotification = () => {
+            Notify.create({
+                message: "Começar próximo estágio?",
+                progress: true,
+                color: "primary",
+                textColor: "dark",
+                avatar: require(`../../../public/${nextStageName}-dark.png`),
+                actions: [
+                    {
+                        label: "Não",
+                        color: "accent",
+                        handler: () => {
+                            /* ... */
+                        },
                     },
-                },
-                {
-                    label: "Sim",
-                    color: "dark",
-                    handler: () => {
-                        startStage({ commit, state })
+                    {
+                        label: "Sim",
+                        color: "dark",
+                        handler: () => startStage({ commit, state }),
                     },
-                },
-            ],
-        })
+                ],
+            })
+        }
 
-    let timeoutReference = null
+        const timeoutReference =
+            state.autoStart &&
+            setTimeout(() => {
+                console.log("autoStart")
+                startStage({ commit, state })
+            }, 7000)
 
-    if (priorStageEnding && state.autoStart) {
-        timeoutReference = setTimeout(() => {
-            startStage({ commit, state })
-        }, 5000)
+        const showInternalNotificationAutoStart = () => {
+            Notify.create({
+                message: "Próximo estágio começando...",
+                progress: true,
+                timeout: 5000,
+                color: "primary",
+                textColor: "dark",
+                avatar: require(`../../../public/${nextStageName}-dark.png`),
+                actions: [
+                    {
+                        label: "Cancelar",
+                        color: "accent",
+                        handler: () => clearTimeout(timeoutReference),
+                    },
+                ],
+            })
+        }
+
+        const showSystemNotification = (body, handlerCallback) => {
+            const notificationOptions = {
+                body,
+                icon: require(`../../../public/${nextStageName}-dark.png`),
+            }
+
+            const n = new Notification("Du!modoro", notificationOptions)
+
+            n.onclick = () => handlerCallback()
+        }
+
+        const useSystemNotification = window.Notification && Notification.permission == "granted"
+
+        !useSystemNotification && !state.autoStart && showInternalNotification()
+
+        !useSystemNotification && state.autoStart && showInternalNotificationAutoStart()
+
+        useSystemNotification &&
+            !state.autoStart &&
+            showSystemNotification("Começar próximo estágio?", () => startStage({ commit, state }))
+
+        useSystemNotification &&
+            state.autoStart &&
+            showSystemNotification("Próximo estágio começando... (clique para cancelar)", () =>
+                clearTimeout(timeoutReference)
+            )
     }
 
-    priorStageEnding &&
-        state.autoStart &&
-        Notify.create({
-            message: "Próximo estágio começando...",
-            progress: true,
-            timeout: 5000,
-            color: "primary",
-            textColor: "dark",
-            avatar: require(`../../../public/${nextStageName}-dark.png`),
-            actions: [
-                {
-                    label: "Cancelar",
-                    color: "accent",
-                    handler: () => {
-                        clearTimeout(timeoutReference)
-                    },
-                },
-            ],
-        })
+    // if ("actions" in Notification.prototype) {
+    //     console.log("ok")
+    // } else {
+    //     console.log("not ok")
+    //     // Action buttons are NOT supported.
+    // }
 }
 
 export function setWorkTime({ commit }, payload) {

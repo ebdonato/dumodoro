@@ -15,7 +15,6 @@ export function updateCycles(state, payload) {
 }
 
 export function updateCycle(state, payload) {
-    console.log("updateCycle")
     state.cycle = payload
 }
 
