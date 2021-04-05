@@ -89,6 +89,7 @@ export default {
                 .dialog({
                     title: "Confirme",
                     message: "Encerrar o aplicativo?",
+                    dark: true,
                     cancel: true,
                     persistent: true,
                 })

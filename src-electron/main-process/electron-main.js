@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme } from "electron"
+import { app, BrowserWindow, nativeTheme, Tray } from "electron"
 const windowStateKeeper = require("electron-window-state")
 
 try {
@@ -34,6 +34,7 @@ function createWindow() {
         useContentSize: false,
         frame: false,
         resizable: false,
+        skipTaskbar: true,
         webPreferences: {
             // Change from /quasar.conf.js > electron > nodeIntegration;
             // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration
@@ -52,6 +53,29 @@ function createWindow() {
     mainWindow.on("closed", () => {
         mainWindow = null
     })
+
+    console.log("__dirname", __dirname)
+    console.log("__filename", __filename)
+    console.log("__static", __statics)
+
+    try {
+        const tray = new Tray(require("path").join(__statics, "icons/favicon-16x16.png"))
+        tray.setToolTip("Du!modoro")
+        tray.on("click", () => {
+            if (mainWindow.isVisible()) {
+                mainWindow.hide()
+            } else {
+                mainWindow.show()
+            }
+        })
+
+        mainWindow.on("blur", () => {
+            mainWindow.hide()
+        })
+    } catch (error) {
+        mainWindow.setSkipTaskbar(false)
+        console.log(error)
+    }
 }
 
 app.on("ready", createWindow)
