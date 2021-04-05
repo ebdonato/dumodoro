@@ -9,8 +9,8 @@
         "lint": "eslint --ext .js,.vue ./",
         "test": "echo \"No test specified\" && exit 0",
         "dev": "quasar dev",
-        "election-dev": "quasar dev -m electron",
-        "election-build": "quasar build -m electron",
+        "electron-dev": "quasar dev -m electron",
+        "electron-build": "quasar build -m electron",
         "icongenie": "icongenie generate -i ./public/logo.png --skip-trim --theme-color ffd600"
     },
     "dependencies": {
