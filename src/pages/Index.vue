@@ -75,7 +75,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex"
+import { mapGetters } from "vuex"
+import { Timer } from "boot/worker"
+
 export default {
     name: "PageIndex",
     data() {
@@ -103,7 +105,32 @@ export default {
         }
     },
     methods: {
-        ...mapActions("timer", ["startStage", "stopStage", "skipStage", "reset"]),
+        startStage() {
+            Timer.start()
+
+            window.Notification &&
+                !["denied", "granted"].includes(Notification.permission) &&
+                this.$q
+                    .dialog({
+                        title: "Notificações",
+                        message: "Exibir notificação ao fim de cada estágio?",
+                        dark: true,
+                        cancel: true,
+                        persistent: true,
+                    })
+                    .onOk(() => {
+                        Notification.requestPermission()
+                    })
+        },
+        stopStage() {
+            Timer.stop()
+        },
+        skipStage() {
+            Timer.skip()
+        },
+        reset() {
+            Timer.reset()
+        },
         skipStageDialog() {
             this.$q
                 .dialog({

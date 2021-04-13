@@ -22,28 +22,14 @@ export function updateStatus(state, payload) {
     state.status = payload
 }
 
+export function updateStage(state, payload) {
+    state.stage = payload
+}
+
 export function updateAutoStart(state, payload) {
     state.autoStart = payload
 }
 
-export function updateStage(state, payload) {
-    state.stage = payload
-    if (payload === "work") {
-        state.cycle++
-    }
-    if (payload === "rest") {
-        state.cycle = 0
-    }
-}
-
 export function updateTimeRemaining(state, payload) {
-    state.timeRemaining = payload * 60
-}
-
-export function decreaseTimeRemaining(state) {
-    state.timeRemaining--
-}
-
-export function updateIntervalReference(state, payload) {
-    state.intervalReference = payload
+    state.timeRemaining = payload
 }

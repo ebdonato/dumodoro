@@ -9,6 +9,5 @@ export default function() {
         stage: null, // work or pause or rest
         status: null, // stopped or running or waiting
         timeRemaining: null, // in seconds
-        intervalReference: null,
     }
 }
