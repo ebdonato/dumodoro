@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme, Tray, nativeImage } from "electron"
+import { app, BrowserWindow, nativeTheme /*Tray, nativeImage*/ } from "electron"
 //import path from "path"
 
 const windowStateKeeper = require("electron-window-state")
