@@ -26,15 +26,25 @@ export default async ({ store }) => {
 
         const message = Timer.autoStart ? "Parar o estágio?" : "Começar próximo estágio?"
 
+        let handlerCanRun = true
+
         const handler = Timer.autoStart
             ? () => {
-                  Timer.restartStage()
+                  handlerCanRun && Timer.restartStage()
+                  handlerCanRun = false
               }
             : () => {
-                  Timer.start()
+                  handlerCanRun && Timer.start()
+                  handlerCanRun = false
               }
 
-        const avatar = require(`../../public/${Timer.stage}-dark.png`)
+        const stageAvatar = {
+            work: "work-dark.png",
+            pause: "pause-dark.png",
+            rest: "rest-dark.png",
+        }
+
+        const avatar = stageAvatar[Timer.stage] || "logo.png"
 
         if (useSystemNotification) {
             const notificationOptions = {
@@ -45,29 +55,29 @@ export default async ({ store }) => {
             const n = new Notification("Du!modoro", notificationOptions)
 
             n.onclick = handler
-        } else {
-            Notify.create({
-                message,
-                progress: true,
-                color: "primary",
-                textColor: "dark",
-                avatar,
-                actions: [
-                    {
-                        label: "Não",
-                        color: "accent",
-                        handler: () => {
-                            /* ... */
-                        },
-                    },
-                    {
-                        label: "Sim",
-                        color: "dark",
-                        handler,
-                    },
-                ],
-            })
         }
+
+        Notify.create({
+            message,
+            progress: true,
+            color: "primary",
+            textColor: "dark",
+            avatar,
+            actions: [
+                {
+                    label: "Não",
+                    color: "accent",
+                    handler: () => {
+                        /* ... */
+                    },
+                },
+                {
+                    label: "Sim",
+                    color: "dark",
+                    handler,
+                },
+            ],
+        })
     })
 
     store.dispatch("timer/setWorkTime", LocalStorage.getItem("WorkTime") ?? 25)
