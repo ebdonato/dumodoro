@@ -76,7 +76,7 @@
 
 <script>
 import { mapGetters } from "vuex"
-import { Timer } from "boot/worker"
+import { timerProxy } from "boot/init-worker"
 
 export default {
     name: "PageIndex",
@@ -106,7 +106,7 @@ export default {
     },
     methods: {
         startStage() {
-            Timer.start()
+            timerProxy.start()
 
             window.Notification &&
                 !["denied", "granted"].includes(Notification.permission) &&
@@ -123,13 +123,13 @@ export default {
                     })
         },
         stopStage() {
-            Timer.stop()
+            timerProxy.stop()
         },
         skipStage() {
-            Timer.skip()
+            timerProxy.skip()
         },
         reset() {
-            Timer.reset()
+            timerProxy.reset()
         },
         skipStageDialog() {
             this.$q

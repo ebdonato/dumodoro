@@ -19,7 +19,7 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://v1.quasar.dev/quasar-cli/boot-files
-        boot: ["worker"],
+        boot: ["init-worker"],
 
         // https://v1.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ["app.scss"],
@@ -105,7 +105,7 @@ module.exports = function(/* ctx */) {
 
         // https://v1.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
         pwa: {
-            workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
+            workboxPluginMode: "InjectManifest", // 'GenerateSW' or 'InjectManifest'
             workboxOptions: {}, // only for GenerateSW
             manifest: {
                 name: `Du! Pomodoro Timer`,

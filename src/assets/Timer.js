@@ -13,6 +13,8 @@ const Timer = {
     stage: null, // work or pause or rest
     status: null, // stopped or running or waiting
     timeRemaining: null, // in seconds
+
+    //aux
     intervalReference: null,
 
     setParameters({ workTime, pauseTime, restTime, cycles, autoStart }) {
@@ -21,6 +23,17 @@ const Timer = {
         Timer.restTime = restTime || Timer.restTime
         Timer.cycles = cycles || Timer.cycles
         Timer.autoStart = autoStart ?? Timer.autoStart
+
+        const currentParameters = {
+            workTime: Timer.workTime,
+            pauseTime: Timer.pauseTime,
+            restTime: Timer.restTime,
+            cycles: Timer.cycles,
+            autoStart: Timer.autoStart,
+        }
+
+        Emitter.emit("parametersUpdated", { ...currentParameters })
+        process.env.DEV && console.log("parametersUpdated: ", { ...currentParameters })
     },
 
     setStatus(status = "stopped") {
@@ -128,7 +141,10 @@ const Timer = {
         if (!Timer.timeRemaining) {
             Timer.stop()
             Timer.next()
-            Emitter.emit("stageEnded")
+            Emitter.emit("stageEnded", {
+                autoStart: Timer.autoStart,
+                stage: Timer.stage,
+            })
         }
     },
 }

@@ -117,50 +117,57 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex"
+import { timerProxy } from "boot/init-worker"
+
 export default {
     name: "PageConfig",
     computed: {
         ...mapGetters("timer", ["getCycles", "getWorkTime", "getPauseTime", "getRestTime", "getAutoStart"]),
         cycles: {
-            set(value) {
-                this.setCycles(value)
-                this.$q.localStorage.set("Cycles", value)
+            set(cycles) {
+                this.setCycles(cycles)
+                this.$q.localStorage.set("Cycles", cycles)
+                timerProxy.setParameters({ cycles })
             },
             get() {
                 return this.getCycles
             },
         },
         work: {
-            set(value) {
-                this.setWorkTime(value)
-                this.$q.localStorage.set("WorkTime", value)
+            set(workTime) {
+                this.setWorkTime(workTime)
+                this.$q.localStorage.set("WorkTime", workTime)
+                timerProxy.setParameters({ workTime })
             },
             get() {
                 return this.getWorkTime
             },
         },
         pause: {
-            set(value) {
-                this.setPauseTime(value)
-                this.$q.localStorage.set("PauseTime", value)
+            set(pauseTime) {
+                this.setPauseTime(pauseTime)
+                this.$q.localStorage.set("PauseTime", pauseTime)
+                timerProxy.setParameters({ pauseTime })
             },
             get() {
                 return this.getPauseTime
             },
         },
         rest: {
-            set(value) {
-                this.setRestTime(value)
-                this.$q.localStorage.set("RestTime", value)
+            set(restTime) {
+                this.setRestTime(restTime)
+                this.$q.localStorage.set("RestTime", restTime)
+                timerProxy.setParameters({ restTime })
             },
             get() {
                 return this.getRestTime
             },
         },
         autoStart: {
-            set(value) {
-                this.setAutoStart(value)
-                this.$q.localStorage.set("AutoStart", value)
+            set(autoStart) {
+                this.setAutoStart(autoStart)
+                this.$q.localStorage.set("AutoStart", autoStart)
+                timerProxy.setParameters({ autoStart: !!autoStart })
             },
             get() {
                 return this.getAutoStart
