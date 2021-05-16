@@ -53,6 +53,10 @@ const Worker = {
     setTimerParameters(parameters) {
         Timer.setParameters({ ...parameters })
     },
+
+    getTimerParametersAndState() {
+        return Timer.getParametersAndState()
+    },
 }
 
 export { Worker }

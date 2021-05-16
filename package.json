@@ -12,6 +12,7 @@
         "electron-dev": "quasar dev -m electron",
         "electron-build": "quasar build -m electron",
         "pwa-dev": "quasar dev --mode pwa",
+        "pwa-build": "quasar build --mode pwa",
         "icongenie": "icongenie generate -i ./public/logo.png --skip-trim --theme-color ffd600"
     },
     "dependencies": {

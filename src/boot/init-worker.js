@@ -2,6 +2,7 @@ import { Notify, LocalStorage } from "quasar"
 
 const timerProxy = {
     setParameters: () => {},
+    getParametersAndState: () => {},
     start: () => {},
     stop: () => {},
     reset: () => {},
@@ -107,6 +108,14 @@ export default async ({ store }) => {
         parametersUpdated,
     }
 
+    const timerParameters = {
+        workTime: LocalStorage.getItem("WorkTime") ?? 25,
+        pauseTime: LocalStorage.getItem("PauseTime") ?? 5,
+        restTime: LocalStorage.getItem("RestTime") ?? 15,
+        cycles: LocalStorage.getItem("Cycles") ?? 4,
+        autoStart: LocalStorage.getItem("AutoStart") ?? false,
+    }
+
     if (isPWA) {
         navigator.serviceWorker.ready.then(registration => {
             navigator.serviceWorker.addEventListener("message", event => {
@@ -123,11 +132,15 @@ export default async ({ store }) => {
             }
 
             timerProxy.setParameters = sendMessage("setTimerParameters")
+            timerProxy.getParametersAndState = sendMessage("getTimerParametersAndState")
             timerProxy.start = sendMessage("startTimer")
             timerProxy.stop = sendMessage("stopTimer")
             timerProxy.reset = sendMessage("resetTimer")
             timerProxy.skip = sendMessage("skipTimer")
             timerProxy.restartStage = sendMessage("restartTimer")
+
+            sendMessage("setTimerParameters")(timerParameters)
+            sendMessage("getTimerParametersAndState")()
 
             return registration
         })
@@ -136,24 +149,18 @@ export default async ({ store }) => {
             module.Worker.setupCallbacks(workerCallbacks)
 
             timerProxy.setParameters = module.Worker.setTimerParameters
+            timerProxy.getParametersAndState = module.Worker.getTimerParametersAndState
             timerProxy.start = module.Worker.startTimer
             timerProxy.stop = module.Worker.stopTimer
             timerProxy.reset = module.Worker.resetTimer
             timerProxy.skip = module.Worker.skipTimer
             timerProxy.restartStage = module.Worker.restartTimerStage
 
-            const params = {
-                workTime: LocalStorage.getItem("WorkTime") ?? 25,
-                pauseTime: LocalStorage.getItem("PauseTime") ?? 5,
-                restTime: LocalStorage.getItem("RestTime") ?? 15,
-                cycles: LocalStorage.getItem("Cycles") ?? 4,
-                autoStart: LocalStorage.getItem("AutoStart") ?? false,
-            }
+            parametersUpdated(timerParameters)
 
-            parametersUpdated(params)
-
-            module.Worker.setTimerParameters(params)
-            module.Worker.initTimer()
+            module.Worker.setTimerParameters(timerParameters)
+            module.Worker.resetTimer()
+            module.Worker.getTimerParametersAndState()
         })
     }
 }

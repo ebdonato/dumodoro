@@ -1,7 +1,7 @@
 import { Emitter } from "./Emitter.js"
 
 const Timer = {
-    //config
+    //parameters
     workTime: 25, // in minutes
     pauseTime: 5, // in minutes
     restTime: 15, // in minutes
@@ -11,19 +11,42 @@ const Timer = {
     //state
     cycle: 0,
     stage: null, // work or pause or rest
-    status: null, // stopped or running or waiting
+    status: null, // stopped or running
     timeRemaining: null, // in seconds
 
     //aux
     intervalReference: null,
 
-    setParameters({ workTime, pauseTime, restTime, cycles, autoStart }) {
-        Timer.workTime = workTime || Timer.workTime
-        Timer.pauseTime = pauseTime || Timer.pauseTime
-        Timer.restTime = restTime || Timer.restTime
-        Timer.cycles = cycles || Timer.cycles
-        Timer.autoStart = autoStart ?? Timer.autoStart
+    getParametersAndState() {
+        const currentParameters = Timer.getParameters()
+        const currentState = Timer.getState()
 
+        const parametersAndState = {
+            parameters: { ...currentParameters },
+            state: { ...currentState },
+        }
+
+        return parametersAndState
+    },
+
+    getState() {
+        const currentState = {
+            cycle: Timer.cycle,
+            stage: Timer.stage,
+            status: Timer.status,
+            timeRemaining: Timer.timeRemaining,
+        }
+
+        Emitter.emit("cycleUpdated", Timer.cycle)
+        Emitter.emit("stageUpdated", Timer.stage)
+        Emitter.emit("statusUpdated", Timer.status)
+        Emitter.emit("count", Timer.timeRemaining)
+        process.env.DEV && console.log("stateUpdated: ", currentState)
+
+        return { ...currentState }
+    },
+
+    getParameters() {
         const currentParameters = {
             workTime: Timer.workTime,
             pauseTime: Timer.pauseTime,
@@ -33,7 +56,24 @@ const Timer = {
         }
 
         Emitter.emit("parametersUpdated", { ...currentParameters })
-        process.env.DEV && console.log("parametersUpdated: ", { ...currentParameters })
+        process.env.DEV && console.log("parametersUpdated: ", currentParameters)
+
+        return { ...currentParameters }
+    },
+
+    setParameters({ workTime, pauseTime, restTime, cycles, autoStart }) {
+        Timer.workTime = workTime || Timer.workTime
+        Timer.pauseTime = pauseTime || Timer.pauseTime
+        Timer.restTime = restTime || Timer.restTime
+        Timer.cycles = cycles || Timer.cycles
+        Timer.autoStart = autoStart ?? Timer.autoStart
+
+        if ((workTime || pauseTime || restTime) && Timer.status != "running") {
+            Timer.restartStage()
+        }
+
+        //para emitir os novos parâmetros
+        Timer.getParameters()
     },
 
     setStatus(status = "stopped") {
@@ -69,7 +109,6 @@ const Timer = {
         Timer.stop()
         Timer.cycle = 0
         Timer.stage = null
-        Timer.status = null
         Timer.timeRemaining = null
         Timer.next(true)
     },

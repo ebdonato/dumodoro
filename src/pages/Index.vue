@@ -80,11 +80,6 @@ import { timerProxy } from "boot/init-worker"
 
 export default {
     name: "PageIndex",
-    data() {
-        return {
-            value: 100,
-        }
-    },
     filters: {
         stage(value) {
             const nextStageOptions = {
@@ -100,9 +95,7 @@ export default {
         ...mapGetters("timer", ["getTimeRemaining", "getStage", "getProgress", "getStatus", "getCycle", "getCycles"]),
     },
     mounted() {
-        if (!this.getStage) {
-            this.reset()
-        }
+        timerProxy.getParametersAndState()
     },
     methods: {
         startStage() {

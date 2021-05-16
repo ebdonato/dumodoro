@@ -12,7 +12,6 @@ import { registerRoute } from "workbox-routing"
 import { StaleWhileRevalidate } from "workbox-strategies"
 
 import { Worker } from "assets/Worker"
-//import { LocalStorage } from "quasar"
 
 //configurações - precaching
 precacheAndRoute(self.__WB_MANIFEST)
@@ -83,38 +82,20 @@ Worker.setupCallbacks({
     parametersUpdated,
 })
 
-const workTime = 25
-const pauseTime = 5
-const restTime = 15
-const cycles = 4
-const autoStart = false
-// const workTime = LocalStorage.getItem("WorkTime") ?? 25
-// const pauseTime = LocalStorage.getItem("PauseTime") ?? 5
-// const restTime = LocalStorage.getItem("RestTime") ?? 15
-// const cycles = LocalStorage.getItem("Cycles") ?? 4
-// const autoStart = LocalStorage.getItem("AutoStart") ?? false
-
-Worker.setTimerParameters({
-    workTime,
-    pauseTime,
-    restTime,
-    cycles,
-    autoStart,
-})
-
-Worker.initTimer()
+Worker.resetTimer()
 
 self.addEventListener("message", event => {
-    const timerProxy = {
+    const options = {
         setTimerParameters: Worker.setTimerParameters,
         startTimer: Worker.startTimer,
         stopTimer: Worker.stopTimer,
         resetTimer: Worker.resetTimer,
         skipTimer: Worker.skipTimer,
         restartTimer: Worker.restartTimerStage,
+        getTimerParametersAndState: Worker.getTimerParametersAndState,
     }
 
-    const callback = timerProxy[event.data.label]
+    const callback = options[event.data.label]
 
     callback && callback(event.data.value)
 })
